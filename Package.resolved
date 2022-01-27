@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "StringKit",
+        "repositoryURL": "https://github.com/hrietmann/StringKit.git",
+        "state": {
+          "branch": "main",
+          "revision": "3420f59dd602e8afac5ee9e34095852c1886ff18",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}

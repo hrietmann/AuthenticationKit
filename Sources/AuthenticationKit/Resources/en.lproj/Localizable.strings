@@ -1,0 +1,17 @@
+// =====
+// ERRORS
+// =====
+
+"Error.UserNotSignedIn" = "Unable to sign you out because you're not signed in yet.";
+"Error.UserAlreadySignedIn" = "Unable to sign you in because you're already signed in."
+"Error.UsernameMissing" = "Username is missing.";
+"Error.EmailMissing" = "Email is missing.";
+"Error.PasswordMissing" = "Password is missing.";
+"Error.InvalidUsernameFormat" = "Invalid username format. The username should only contains lower and uppercased letters.";
+"Error.InvalidEmailFormat" = "Inavlid email format. Check the email you filled in.";
+"Error.InvalidPasswordFormat" = "Your password must have at least %@.";
+"Error.InvalidPasswordFormat.atLeast8Characters" = "8 characters";
+"Error.InvalidPasswordFormat.atLeastOneLowercaseLetter" = "1 lowercased letter";
+"Error.InvalidPasswordFormat.atLeastOneUppercaseLetter" = "1 uppercased letter";
+"Error.InvalidPasswordFormat.atLeastOneDigits" = "1 digit";
+"Error.InvalidPasswordFormat.atLeastOneSpecialCharacter" = "1 special character (i.e.: '.', '@',...)";
