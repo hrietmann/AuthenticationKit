@@ -7,6 +7,7 @@
 
 import Foundation
 import StringKit
+import CoreGraphics
 
 
 
