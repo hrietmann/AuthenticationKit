@@ -61,7 +61,7 @@ public protocol AKAuthenticator {
     func change(username: String, of user: User) async throws
     
     /// Update the given user's profile picture
-    func change(profile image: Data?, of user: User) async throws
+    func change(profile image: CGImage?, of user: User) async throws
     
     /// Definitly delete the given user
     func delete(user: User) async throws

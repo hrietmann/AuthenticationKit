@@ -211,8 +211,7 @@ public final class AuthenticationManager<Authenticator: AKAuthenticator>: Observ
     public func changeProfileImage() async { await run(changeProfileImageWork) }
     private func changeProfileImageWork() async throws {
         guard let user = user else { throw UserNotSignedIn(localizationFile: errorsLocalizationFile) }
-        let data = profileImage?.png(named: UUID().uuidString)
-        try await authenticator.change(profile: data, of: user)
+        try await authenticator.change(profile: profileImage, of: user)
     }
     
     

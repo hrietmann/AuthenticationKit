@@ -12,7 +12,7 @@ import SwiftUI
 
 extension CGImage {
     
-    func png(named fileName: String) -> Data? {
+    public func png(named fileName: String) -> Data? {
         let trimmedName = fileName.trimmingCharacters(in: .whitespacesAndNewlines)
         guard let mutableData = CFDataCreateMutable(nil, 0),
               let destination = CGImageDestinationCreateWithData(mutableData, "\(trimmedName).png" as CFString, 1, nil)
