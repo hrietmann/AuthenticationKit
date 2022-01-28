@@ -54,6 +54,9 @@ public final class AKTestAuthenticator: AKAuthenticator {
     /// Result returned by changeEmail
     public var changeEmailError: Error? = nil
     
+    /// Result returned by changePassword
+    public var changePasswordError: Error? = nil
+    
     /// Result returned by sendEmailVerification
     public var sendEmailVerificationError: Error? = nil
     
@@ -110,12 +113,20 @@ public final class AKTestAuthenticator: AKAuthenticator {
         currentUser = nil
     }
     
-    public func change(email: String, of user: User) async throws {
+    public func change(email: String, with password: String, of user: User) async throws {
         if waitingSeconds > 0 {
             try await Task.sleep(nanoseconds: waitingSeconds * 1_000_000_000)
         }
         if let error = changeEmailError { throw error }
         currentUser?.email = email
+    }
+    
+    public func change(password currentPassword: String, to newPassword: String, with email: String, of user: User) async throws {
+        if waitingSeconds > 0 {
+            try await Task.sleep(nanoseconds: waitingSeconds * 1_000_000_000)
+        }
+        if let error = changePasswordError { throw error }
+        #warning("changePassword not tested yet")
     }
     
     public func sendEmailVerification(for user: User) async throws {

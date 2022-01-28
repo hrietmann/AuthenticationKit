@@ -22,6 +22,7 @@ final class ChangeEmailTests: XCTestCase {
         
         let sut = await AuthenticationManager(authenticator: authenticator)
         sut.emailEntry = newEmail
+        sut.passwordEntry = "@Azertyuiop3"
         await sut.changeEmail()
         
         // Waiting for the authenticator publisher to propagate its new values to the main actor

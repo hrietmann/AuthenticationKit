@@ -11,6 +11,7 @@ final class AuthenticationKitTests: XCTestCase {
         var user = AKTestAuthenticator.User.exemple
         user.username = "Username"
         user.email = "email@email.com"
+        let password = "Azertyuiop@1234567890"
         let authenticator = AKTestAuthenticator()
         authenticator.signUpResult = .success(user)
         authenticator.waitingSeconds = 0
@@ -18,7 +19,8 @@ final class AuthenticationKitTests: XCTestCase {
         let sut = await AuthenticationManager(authenticator: authenticator)
         sut.usernameEntry = user.username ?? ""
         sut.emailEntry = user.email ?? ""
-        sut.passwordEntry = "Azertyuiop@1234567890"
+        sut.passwordEntry = password
+        sut.passwordEntry2 = password
         await sut.signUp()
         
         // Waiting for the authenticator publisher to propagate its new values to the main actor
@@ -35,6 +37,7 @@ final class AuthenticationKitTests: XCTestCase {
         // Use XCTAssert and related functions to verify your tests produce the correct
         // results.
         let error = AKError("Internal server error")
+        let password = "Azertyuiop@1234567890"
         let authenticator = AKTestAuthenticator()
         authenticator.signUpResult = .failure(error)
         authenticator.waitingSeconds = 0
@@ -42,7 +45,8 @@ final class AuthenticationKitTests: XCTestCase {
         let sut = await AuthenticationManager(authenticator: authenticator)
         sut.usernameEntry = "Username"
         sut.emailEntry = "email@email.com"
-        sut.passwordEntry = "Azertyuiop@1234567890"
+        sut.passwordEntry = password
+        sut.passwordEntry2 = password
         await sut.signUp()
         
         XCTAssertTrue(sut.error?.localizedDescription == error.localizedDescription)

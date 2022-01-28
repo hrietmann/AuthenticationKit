@@ -16,3 +16,4 @@
 "Error.InvalidPasswordFormat.atLeastOneDigits" = "1 digit";
 "Error.InvalidPasswordFormat.atLeastOneSpecialCharacter" = "1 special character (i.e.: '.', '@',...)";
 "Error.EmailAlreadyVerified" = "Your email is already verified.";
+"Error.PasswordMismatch" = "Confirmation password is different.";

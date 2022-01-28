@@ -16,6 +16,7 @@ final class SignUpTests: XCTestCase {
         var user = AKTestAuthenticator.User.exemple
         user.username = "Username"
         user.email = "email@email.com"
+        let password = "Azertyuiop@1234567890"
         let authenticator = AKTestAuthenticator()
         authenticator.signUpResult = .success(user)
         authenticator.waitingSeconds = 0
@@ -23,7 +24,8 @@ final class SignUpTests: XCTestCase {
         let sut = await AuthenticationManager(authenticator: authenticator)
         sut.usernameEntry = user.username ?? ""
         sut.emailEntry = user.email ?? ""
-        sut.passwordEntry = "Azertyuiop@1234567890"
+        sut.passwordEntry = password
+        sut.passwordEntry2 = password
         await sut.signUp()
         
         // Waiting for the authenticator publisher to propagate its new values to the main actor
