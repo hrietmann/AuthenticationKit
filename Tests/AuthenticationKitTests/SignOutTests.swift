@@ -12,16 +12,16 @@ final class SignOutTests: XCTestCase {
     
     
     @MainActor func test_authentication_manager_sign_out_successfull() async throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct
-        // results.
-        let user = AKTestAuthenticator.User(username: "Username", email: "email@email.com")
+        
+        var user = AKTestAuthenticator.User.exemple
+        user.username = "Username"
+        user.email = "email@email.com"
         let authenticator = AKTestAuthenticator()
         authenticator.cachedUser = user
         authenticator.signOutResult = nil
         authenticator.waitingSeconds = 0
         
-        let sut = await AKManager(authenticator: authenticator)
+        let sut = await AuthenticationManager(authenticator: authenticator)
         await sut.signOut()
         
         // Waits for the background tasks to propagate the result on the main actor
@@ -34,17 +34,17 @@ final class SignOutTests: XCTestCase {
     
     
     @MainActor func test_authentication_manager_sign_out_server_failed() async throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct
-        // results.
-        let user = AKTestAuthenticator.User(username: "Username", email: "email@email.com")
+        
+        var user = AKTestAuthenticator.User.exemple
+        user.username = "Username"
+        user.email = "email@email.com"
         let error = AKError("Internal server error")
         let authenticator = AKTestAuthenticator()
         authenticator.cachedUser = user
         authenticator.signOutResult = error
         authenticator.waitingSeconds = 0
         
-        let sut = await AKManager(authenticator: authenticator)
+        let sut = await AuthenticationManager(authenticator: authenticator)
         await sut.signOut()
         
         XCTAssertNotNil(sut.error)
@@ -61,7 +61,7 @@ final class SignOutTests: XCTestCase {
         authenticator.signOutResult = nil
         authenticator.waitingSeconds = 0
         
-        let sut = await AKManager(authenticator: authenticator)
+        let sut = await AuthenticationManager(authenticator: authenticator)
         await sut.signOut()
         
         XCTAssertNotNil(sut.error)

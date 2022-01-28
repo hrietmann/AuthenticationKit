@@ -8,14 +8,16 @@ final class AuthenticationKitTests: XCTestCase {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct
         // results.
-        let user = AKTestAuthenticator.User(username: "Username", email: "email@email.com")
+        var user = AKTestAuthenticator.User.exemple
+        user.username = "Username"
+        user.email = "email@email.com"
         let authenticator = AKTestAuthenticator()
         authenticator.signUpResult = .success(user)
         authenticator.waitingSeconds = 0
         
-        let sut = await AKManager(authenticator: authenticator)
-        sut.usernameEntry = user.username
-        sut.emailEntry = user.email
+        let sut = await AuthenticationManager(authenticator: authenticator)
+        sut.usernameEntry = user.username ?? ""
+        sut.emailEntry = user.email ?? ""
         sut.passwordEntry = "Azertyuiop@1234567890"
         await sut.signUp()
         
@@ -37,7 +39,7 @@ final class AuthenticationKitTests: XCTestCase {
         authenticator.signUpResult = .failure(error)
         authenticator.waitingSeconds = 0
         
-        let sut = await AKManager(authenticator: authenticator)
+        let sut = await AuthenticationManager(authenticator: authenticator)
         sut.usernameEntry = "Username"
         sut.emailEntry = "email@email.com"
         sut.passwordEntry = "Azertyuiop@1234567890"

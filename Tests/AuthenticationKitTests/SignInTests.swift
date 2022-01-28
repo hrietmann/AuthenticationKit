@@ -12,16 +12,16 @@ final class SignInTests: XCTestCase {
     
     
     @MainActor func test_authentication_manager_sign_in_successfull() async throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct
-        // results.
-        let user = AKTestAuthenticator.User(username: "Username", email: "email@email.com")
+        
+        var user = AKTestAuthenticator.User.exemple
+        user.username = "Username"
+        user.email = "email@email.com"
         let authenticator = AKTestAuthenticator()
         authenticator.signInResult = .success(user)
         authenticator.waitingSeconds = 0
         
-        let sut = await AKManager(authenticator: authenticator)
-        sut.emailEntry = user.email
+        let sut = await AuthenticationManager(authenticator: authenticator)
+        sut.emailEntry = user.email ?? ""
         sut.passwordEntry = "Azertyuiop@1234567890"
         await sut.signIn()
         
@@ -36,15 +36,13 @@ final class SignInTests: XCTestCase {
     
     
     @MainActor func test_authentication_manager_sign_in_server_failed() async throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct
-        // results.
+        
         let serverError = AKError("Internal server error")
         let authenticator = AKTestAuthenticator()
         authenticator.signInResult = .failure(serverError)
         authenticator.waitingSeconds = 0
         
-        let sut = await AKManager(authenticator: authenticator)
+        let sut = await AuthenticationManager(authenticator: authenticator)
         sut.emailEntry = "email@email.com"
         sut.passwordEntry = "Azertyuiop@1234567890"
         await sut.signIn()
@@ -55,13 +53,11 @@ final class SignInTests: XCTestCase {
     
     
     @MainActor func test_authentication_manager_sign_up_missing_credentials() async throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct
-        // results.
+        
         let authenticator = AKTestAuthenticator()
         authenticator.waitingSeconds = 0
         
-        let sut = await AKManager(authenticator: authenticator)
+        let sut = await AuthenticationManager(authenticator: authenticator)
         
         // Missing all
         sut.emailEntry = ""
@@ -86,16 +82,16 @@ final class SignInTests: XCTestCase {
     }
     
     @MainActor func test_authentication_manager_sign_in_while_signed_in() async throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct
-        // results.
-        let user = AKTestAuthenticator.User(username: "Username", email: "email@email.com")
+        
+        var user = AKTestAuthenticator.User.exemple
+        user.username = "Username"
+        user.email = "email@email.com"
         let authenticator = AKTestAuthenticator()
         authenticator.cachedUser = user
         authenticator.waitingSeconds = 0
         
-        let sut = await AKManager(authenticator: authenticator)
-        sut.emailEntry = user.email
+        let sut = await AuthenticationManager(authenticator: authenticator)
+        sut.emailEntry = user.email ?? ""
         sut.passwordEntry = "Azertyuiop@1234567890"
         await sut.signIn()
         

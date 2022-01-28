@@ -8,19 +8,20 @@
 import Foundation
 import Combine
 import StringKit
-
+import SwiftUI
 
 
 
 
 @MainActor
 @available(iOS 14.0.0, *)
-public final class AKManager<Authenticator: AKAuthenticator>: ObservableObject {
+public final class AuthenticationManager<Authenticator: AKAuthenticator>: ObservableObject {
     
     // - MARK: Editable properties
     @Published public var usernameEntry = ""
     @Published public var emailEntry = ""
     @Published public var passwordEntry = ""
+    @Published public var profileImage: CGImage? = nil
     
     // - MARK: Activity states properties
     @Published public private(set) var error: Error? = nil
@@ -55,6 +56,8 @@ public final class AKManager<Authenticator: AKAuthenticator>: ObservableObject {
             .sink { currentUser in
                 guard let currentUser = currentUser else { self.state = .disconnected ; return }
                 self.state = .connected(user: currentUser)
+                self.usernameEntry = currentUser.username ?? ""
+                self.emailEntry = currentUser.email ?? ""
             }
             .store(in: &cancellables)
     }
@@ -132,6 +135,69 @@ public final class AKManager<Authenticator: AKAuthenticator>: ObservableObject {
         let localizationFile = errorsLocalizationFile
         guard let user = user else { throw UserNotSignedIn(localizationFile: localizationFile) }
         try await authenticator.signOut(user: user)
+    }
+    
+    
+    // - MARK: Change Email
+    public func changeEmail() { run(changeEmailWork) }
+    public func changeEmail() async { await run(changeEmailWork) }
+    private func changeEmailWork()  async throws {
+        guard !emailEntry.isEmpty else { throw EmailMissing(localizationFile: errorsLocalizationFile) }
+        guard emailEntry.isValidEmail else { throw InvalidEmailFormat(localizationFile: errorsLocalizationFile) }
+        guard let user = user else { throw UserNotSignedIn(localizationFile: errorsLocalizationFile) }
+        guard user.email != emailEntry else { return }
+        try await authenticator.change(email: emailEntry, of: user)
+    }
+    
+    
+    // - MARK: Send Email Verification
+    public func sendEmailVerification() { run(sendEmailVerificationWork) }
+    public func sendEmailVerification() async { await run(sendEmailVerificationWork) }
+    private func sendEmailVerificationWork() async throws {
+        guard let user = user else { throw UserNotSignedIn(localizationFile: errorsLocalizationFile) }
+        guard !user.emailVerified else { throw EmailAlreadyVerified(localizationFile: errorsLocalizationFile) }
+        if user.email == nil { try await changeEmailWork() }
+        try await authenticator.sendEmailVerification(for: user)
+    }
+    
+    
+    // - MARK: Send Password Reset Email
+    public func sendPasswordResetEmail() { run(sendPasswordResetEmailWork) }
+    public func sendPasswordResetEmail() async { await run(sendPasswordResetEmailWork) }
+    private func sendPasswordResetEmailWork() async throws {
+        guard let user = user else { throw UserNotSignedIn(localizationFile: errorsLocalizationFile) }
+        try await authenticator.sendPasswordResetEmail(for: user)
+    }
+    
+    
+    // - MARK: Change Username
+    public func changeUsername() { run(changeUsernameWork) }
+    public func changeUsername() async { await run(changeUsernameWork) }
+    private func changeUsernameWork() async throws {
+        guard !usernameEntry.isEmpty else { throw UsernameMissing(localizationFile: errorsLocalizationFile) }
+        guard usernameEntry.isValidUsername else { throw InvalidUsernameFormat(localizationFile: errorsLocalizationFile) }
+        guard let user = user else { throw UserNotSignedIn(localizationFile: errorsLocalizationFile) }
+        guard user.username != usernameEntry else { return }
+        try await authenticator.change(username: usernameEntry, of: user)
+    }
+    
+    
+    // - MARK: Change Profile Image
+    public func changeProfileImage() { run(changeProfileImageWork) }
+    public func changeProfileImage() async { await run(changeProfileImageWork) }
+    private func changeProfileImageWork() async throws {
+        guard let user = user else { throw UserNotSignedIn(localizationFile: errorsLocalizationFile) }
+        let data = profileImage?.png(named: UUID().uuidString)
+        try await authenticator.change(profile: data, of: user)
+    }
+    
+    
+    // - MARK: Delete User
+    public func deleteUser() { run(deleteUserWork) }
+    public func deleteUser() async { await run(deleteUserWork) }
+    private func deleteUserWork() async throws {
+        guard let user = user else { throw UserNotSignedIn(localizationFile: errorsLocalizationFile) }
+        try await authenticator.delete(user: user)
     }
     
     

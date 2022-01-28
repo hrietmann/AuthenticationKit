@@ -16,8 +16,20 @@ public final class AKTestAuthenticator: AKAuthenticator {
     public static var passwordConstraints = PasswordConstraint.allCases
     
     public struct TestUser: AKUser {
-        public let username: String
-        public let email: String
+        public var id: UUID
+        public var username: String?
+        public var email: String?
+        public var emailVerified: Bool
+        public var profileImageURL: URL?
+        
+        public static var exemple: TestUser {
+            TestUser(
+                id: UUID(),
+                username: "John Appleseed",
+                email: "john.appleseed@authentication.com",
+                emailVerified: true,
+                profileImageURL: nil)
+        }
     }
     public typealias User = TestUser
     
@@ -31,13 +43,32 @@ public final class AKTestAuthenticator: AKAuthenticator {
     public var waitingSeconds: UInt64 = 1
     
     /// Result returned by signUp method
-    public var signUpResult: Result<User,Error> = .success(TestUser(username: "John Appleseed", email: "email@email.com"))
+    public var signUpResult: Result<User,Error> = .success(.exemple)
     
     /// Result returned by signIn method
-    public var signInResult: Result<User,Error> = .success(TestUser(username: "John Appleseed", email: "email@email.com"))
+    public var signInResult: Result<User,Error> = .success(.exemple)
     
-    /// Result returned bu signIn method
+    /// Result returned by signIn method
     public var signOutResult: Error? = nil
+    
+    /// Result returned by changeEmail
+    public var changeEmailError: Error? = nil
+    
+    /// Result returned by sendEmailVerification
+    public var sendEmailVerificationError: Error? = nil
+    
+    /// Result returned by sendPasswordResetEmail
+    public var sendPasswordResetEmailError: Error? = nil
+    
+    /// Result returned by changeUsername
+    public var changeUsernameError: Error? = nil
+    
+    /// Result returned by changeProfile
+    public var changeProfileError: Error? = nil
+    
+    /// Result returned by deleteUser
+    public var deleteUserError: Error? = nil
+    
     
     
     public init() {}
@@ -78,5 +109,58 @@ public final class AKTestAuthenticator: AKAuthenticator {
         if let error = signOutResult { throw error }
         currentUser = nil
     }
+    
+    public func change(email: String, of user: User) async throws {
+        if waitingSeconds > 0 {
+            try await Task.sleep(nanoseconds: waitingSeconds * 1_000_000_000)
+        }
+        if let error = changeEmailError { throw error }
+        currentUser?.email = email
+    }
+    
+    public func sendEmailVerification(for user: User) async throws {
+        if waitingSeconds > 0 {
+            try await Task.sleep(nanoseconds: waitingSeconds * 1_000_000_000)
+        }
+        if let error = sendEmailVerificationError { throw error }
+        #warning("sendEmailVerification not tested yet")
+    }
+    
+    public func sendPasswordResetEmail(for user: User) async throws {
+        if waitingSeconds > 0 {
+            try await Task.sleep(nanoseconds: waitingSeconds * 1_000_000_000)
+        }
+        if let error = sendPasswordResetEmailError { throw error }
+        #warning("sendPasswordResetEmail not tested yet")
+    }
+    
+    public func change(username: String, of user: User) async throws {
+        if waitingSeconds > 0 {
+            try await Task.sleep(nanoseconds: waitingSeconds * 1_000_000_000)
+        }
+        if let error = changeUsernameError { throw error }
+        currentUser?.username = username
+        #warning("changeUsername not tested yet")
+    }
+    
+    public func change(profile image: Data?, of user: User) async throws {
+        if waitingSeconds > 0 {
+            try await Task.sleep(nanoseconds: waitingSeconds * 1_000_000_000)
+        }
+        if let error = changeProfileError { throw error }
+        currentUser?.profileImageURL = image == nil ? nil : URL(fileURLWithPath: "")
+        #warning("changeProfile not tested yet")
+    }
+    
+    public func delete(user: User) async throws {
+        if waitingSeconds > 0 {
+            try await Task.sleep(nanoseconds: waitingSeconds * 1_000_000_000)
+        }
+        if let error = deleteUserError { throw error }
+        currentUser = nil
+        #warning("deleteUser not tested yet")
+    }
+    
+    
     
 }

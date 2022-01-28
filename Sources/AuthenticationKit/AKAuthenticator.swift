@@ -45,5 +45,23 @@ public protocol AKAuthenticator {
     /// Locally and remotely signout the given user
     func signOut(user: User) async throws
     
+    /// Update the given user's email
+    func change(email: String, of user: User) async throws
+    
+    /// Request to remotly send an email verification
+    func sendEmailVerification(for user: User) async throws
+    
+    /// Request to send a remote link to change user's password
+    func sendPasswordResetEmail(for user: User) async throws
+    
+    /// Update the given user's username
+    func change(username: String, of user: User) async throws
+    
+    /// Update the given user's profile picture
+    func change(profile image: Data?, of user: User) async throws
+    
+    /// Definitly delete the given user
+    func delete(user: User) async throws
+    
     
 }

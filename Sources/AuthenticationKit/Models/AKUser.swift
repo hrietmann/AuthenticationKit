@@ -11,7 +11,12 @@ import Foundation
 
 
 
-public protocol AKUser {
-    var username: String { get }
-    var email: String { get }
+public protocol AKUser: Identifiable {
+    
+    var id: ID { get }
+    var username: String? { get }
+    var email: String? { get }
+    var emailVerified: Bool { get }
+    var profileImageURL: URL? { get }
+    
 }
