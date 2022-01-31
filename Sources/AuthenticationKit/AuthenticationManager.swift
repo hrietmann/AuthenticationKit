@@ -12,19 +12,18 @@ import SwiftUI
 
 
 
-
 @MainActor
 @available(iOS 14.0.0, *)
 public final class AuthenticationManager<Authenticator: AKAuthenticator>: ObservableObject {
     
-    // - MARK: Editable properties
+    // MARK: - Editable properties -
     @Published public var usernameEntry = ""
     @Published public var emailEntry = ""
     @Published public var passwordEntry = ""
     @Published public var passwordEntry2 = ""
     @Published public var profileImage: CGImage? = nil
     
-    // - MARK: Activity states properties
+    // MARK: - Activity states properties -
     @Published public private(set) var error: Error? = nil
     @Published public private(set) var state = AKState<Authenticator.User>.loading
     public var user: Authenticator.User? { authenticator.currentUser }
@@ -69,7 +68,7 @@ public final class AuthenticationManager<Authenticator: AKAuthenticator>: Observ
     }
     
     
-    // - MARK: loadCachedUser
+    // MARK: - loadCachedUser -
     private func loadCachedUser() { run(loadCachedUserWork) }
     private func loadCachedUser() async { await run(loadCachedUserWork) }
     private func loadCachedUserWork() async throws {
@@ -78,31 +77,52 @@ public final class AuthenticationManager<Authenticator: AKAuthenticator>: Observ
     }
     
     
-    // - MARK: Sign Up
+    // MARK: - Entry error checks -
+    public var usernameError: Error? {
+        guard !usernameEntry.isEmpty
+        else { return UsernameMissing(localizationFile: errorsLocalizationFile) }
+        
+        guard usernameEntry.isValidUsername
+        else { return InvalidUsernameFormat(localizationFile: errorsLocalizationFile) }
+        return nil
+    }
+    public var emailError: Error? {
+        guard !emailEntry.isEmpty
+        else { return EmailMissing(localizationFile: errorsLocalizationFile) }
+        
+        guard emailEntry.isValidEmail
+        else { return EmailMissing(localizationFile: errorsLocalizationFile) }
+        return nil
+    }
+    public var passwordError: Error? {
+        guard !passwordEntry.isEmpty
+        else { return PasswordMissing(localizationFile: errorsLocalizationFile) }
+        
+        let constraints = Authenticator.passwordConstraints
+        guard passwordEntry.isValidPassword(with: constraints)
+        else { return InvalidPasswordFormat(localizationFile: errorsLocalizationFile, constaints: constraints) }
+        return nil
+    }
+    public var password2Error: Error? {
+        guard !passwordEntry2.isEmpty
+        else { return PasswordMissing(localizationFile: errorsLocalizationFile) }
+        
+        let constraints = Authenticator.passwordConstraints
+        guard passwordEntry2.isValidPassword(with: constraints)
+        else { return InvalidPasswordFormat(localizationFile: errorsLocalizationFile, constaints: constraints) }
+        
+        guard passwordEntry == passwordEntry2
+        else { return PasswordMismatch(localizationFile: errorsLocalizationFile) }
+        return nil
+    }
+    
+    
+    // MARK: - Sign Up -
     public func signUp() { run(signUpWork) }
     public func signUp() async { await run(signUpWork) }
     private func signUpWork() async throws {
-        let connected = user != nil
-        let usernameMissing = usernameEntry.isEmpty
-        let emailMissing = emailEntry.isEmpty
-        let passwordMissing = passwordEntry.isEmpty
-        let isValidUsername = usernameEntry.isValidUsername
-        let isValidEmail = emailEntry.isValidEmail
-        let constraints = Authenticator.passwordConstraints
-        let isValidPassword = passwordEntry.isValidPassword(with: constraints)
-        let localizationFile = errorsLocalizationFile
-        
-        guard !connected else { throw UserAlreadySignedIn(localizationFile: localizationFile) }
-        guard !usernameMissing else { throw UsernameMissing(localizationFile: localizationFile) }
-        guard !emailMissing else { throw EmailMissing(localizationFile: localizationFile) }
-        guard !passwordMissing else { throw PasswordMissing(localizationFile: localizationFile) }
-        guard isValidUsername else { throw InvalidUsernameFormat(localizationFile: localizationFile) }
-        guard isValidEmail else { throw InvalidEmailFormat(localizationFile: localizationFile) }
-        guard isValidPassword else { throw InvalidPasswordFormat(localizationFile: localizationFile, constaints: constraints) }
-        guard !passwordEntry2.isEmpty else { throw PasswordMissing(localizationFile: errorsLocalizationFile) }
-        guard passwordEntry2.isValidPassword(with: constraints)
-        else { throw InvalidPasswordFormat(localizationFile: errorsLocalizationFile, constaints: constraints) }
-        guard passwordEntry == passwordEntry2 else { throw PasswordMismatch(localizationFile: errorsLocalizationFile) }
+        guard user == nil else { throw UserAlreadySignedIn(localizationFile: errorsLocalizationFile) }
+        if let error = usernameError ?? emailError ?? passwordError ?? password2Error { throw error }
         try await authenticator.signUp(
             username: usernameEntry,
             email: emailEntry,
@@ -110,71 +130,50 @@ public final class AuthenticationManager<Authenticator: AKAuthenticator>: Observ
     }
     
     
-    // - MARK: Sign In
+    // MARK: - Sign In -
     public func signIn() { run(signInWork) }
     public func signIn() async { await run(signInWork) }
     private func signInWork() async throws {
-        let connected = user != nil
-        let emailMissing = emailEntry.isEmpty
-        let passwordMissing = passwordEntry.isEmpty
-        let isValidEmail = emailEntry.isValidEmail
-        let constraints = Authenticator.passwordConstraints
-        let isValidPassword = passwordEntry.isValidPassword(with: constraints)
-        let localizationFile = errorsLocalizationFile
-        
-        guard !connected else { throw UserAlreadySignedIn(localizationFile: localizationFile) }
-        guard !emailMissing else { throw EmailMissing(localizationFile: localizationFile) }
-        guard !passwordMissing else { throw PasswordMissing(localizationFile: localizationFile) }
-        guard isValidEmail else { throw InvalidEmailFormat(localizationFile: localizationFile) }
-        guard isValidPassword else { throw InvalidPasswordFormat(localizationFile: localizationFile, constaints: constraints) }
+        guard user == nil else { throw UserAlreadySignedIn(localizationFile: errorsLocalizationFile) }
+        if let error = emailError ?? passwordError { throw error }
         try await authenticator.signIn(
             email: emailEntry,
             password: passwordEntry)
     }
     
     
-    // - MARK: Sign Out
+    // MARK: - Sign Out -
     public func signOut() { run(signOutWork) }
     public func signOut() async { await run(signOutWork) }
     private func signOutWork() async throws {
-        let localizationFile = errorsLocalizationFile
-        guard let user = user else { throw UserNotSignedIn(localizationFile: localizationFile) }
+        guard let user = user else { throw UserNotSignedIn(localizationFile: errorsLocalizationFile) }
         try await authenticator.signOut(user: user)
     }
     
     
-    // - MARK: Change Email
+    // MARK: - Change Email -
     public func changeEmail() { run(changeEmailWork) }
     public func changeEmail() async { await run(changeEmailWork) }
     private func changeEmailWork()  async throws {
-        guard !passwordEntry.isEmpty else { throw PasswordMissing(localizationFile: errorsLocalizationFile) }
-        guard !emailEntry.isEmpty else { throw EmailMissing(localizationFile: errorsLocalizationFile) }
-        guard emailEntry.isValidEmail else { throw InvalidEmailFormat(localizationFile: errorsLocalizationFile) }
+        if let error = emailError ?? passwordError { throw error }
         guard let user = user else { throw UserNotSignedIn(localizationFile: errorsLocalizationFile) }
         guard user.email != emailEntry else { return }
         try await authenticator.change(email: emailEntry, with: passwordEntry, of: user)
     }
     
     
-    // - MARK: Change Password
+    // MARK: - Change Password -
     public func changePassword() { run(changePasswordWork) }
     public func changePassword() async { await run(changePasswordWork) }
     private func changePasswordWork()  async throws {
-        guard !passwordEntry.isEmpty else { throw PasswordMissing(localizationFile: errorsLocalizationFile) }
-        guard !passwordEntry2.isEmpty else { throw PasswordMissing(localizationFile: errorsLocalizationFile) }
-        let constraints = Authenticator.passwordConstraints
-        guard passwordEntry2.isValidPassword(with: constraints)
-        else { throw InvalidPasswordFormat(localizationFile: errorsLocalizationFile, constaints: constraints) }
-        guard passwordEntry != passwordEntry2 else { return }
-        guard !emailEntry.isEmpty else { throw EmailMissing(localizationFile: errorsLocalizationFile) }
-        guard emailEntry.isValidEmail else { throw InvalidEmailFormat(localizationFile: errorsLocalizationFile) }
+        if let error = emailError ?? passwordError ?? password2Error { throw error }
         guard let user = user else { throw UserNotSignedIn(localizationFile: errorsLocalizationFile) }
         guard user.email != emailEntry else { return }
         try await authenticator.change(password: passwordEntry, to: passwordEntry2, with: emailEntry, of: user)
     }
     
     
-    // - MARK: Send Email Verification
+    // MARK: - Send Email Verification -
     public func sendEmailVerification() { run(sendEmailVerificationWork) }
     public func sendEmailVerification() async { await run(sendEmailVerificationWork) }
     private func sendEmailVerificationWork() async throws {
@@ -185,7 +184,7 @@ public final class AuthenticationManager<Authenticator: AKAuthenticator>: Observ
     }
     
     
-    // - MARK: Send Password Reset Email
+    // MARK: - Send Password Reset Email -
     public func sendPasswordResetEmail() { run(sendPasswordResetEmailWork) }
     public func sendPasswordResetEmail() async { await run(sendPasswordResetEmailWork) }
     private func sendPasswordResetEmailWork() async throws {
@@ -194,19 +193,18 @@ public final class AuthenticationManager<Authenticator: AKAuthenticator>: Observ
     }
     
     
-    // - MARK: Change Username
+    // MARK: - Change Username -
     public func changeUsername() { run(changeUsernameWork) }
     public func changeUsername() async { await run(changeUsernameWork) }
     private func changeUsernameWork() async throws {
-        guard !usernameEntry.isEmpty else { throw UsernameMissing(localizationFile: errorsLocalizationFile) }
-        guard usernameEntry.isValidUsername else { throw InvalidUsernameFormat(localizationFile: errorsLocalizationFile) }
+        if let error = usernameError { throw error }
         guard let user = user else { throw UserNotSignedIn(localizationFile: errorsLocalizationFile) }
         guard user.username != usernameEntry else { return }
         try await authenticator.change(username: usernameEntry, of: user)
     }
     
     
-    // - MARK: Change Profile Image
+    // MARK: - Change Profile Image -
     public func changeProfileImage() { run(changeProfileImageWork) }
     public func changeProfileImage() async { await run(changeProfileImageWork) }
     private func changeProfileImageWork() async throws {
@@ -215,7 +213,7 @@ public final class AuthenticationManager<Authenticator: AKAuthenticator>: Observ
     }
     
     
-    // - MARK: Delete User
+    // MARK: - Delete User -
     public func deleteUser() { run(deleteUserWork) }
     public func deleteUser() async { await run(deleteUserWork) }
     private func deleteUserWork() async throws {
