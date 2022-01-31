@@ -29,6 +29,10 @@ final class SignOutTests: XCTestCase {
         
         XCTAssertNil(sut.user)
         XCTAssertNil(sut.error)
+        XCTAssertEqual(sut.usernameEntry, "")
+        XCTAssertEqual(sut.emailEntry, "")
+        XCTAssertEqual(sut.passwordEntry, "")
+        XCTAssertEqual(sut.passwordEntry2, "")
         XCTAssertTrue(sut.state.isDisconnected)
     }
     

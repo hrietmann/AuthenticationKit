@@ -32,6 +32,8 @@ final class SignUpTests: XCTestCase {
         try await Task.sleep(nanoseconds: 100_000)
         
         XCTAssertNotNil(sut.user)
+        XCTAssertEqual(sut.passwordEntry, "")
+        XCTAssertEqual(sut.passwordEntry2, "")
         XCTAssertTrue(sut.state.isConnected)
     }
     

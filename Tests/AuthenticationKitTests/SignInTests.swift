@@ -31,6 +31,8 @@ final class SignInTests: XCTestCase {
         XCTAssertNotNil(sut.user)
         XCTAssertTrue(sut.user?.username == user.username)
         XCTAssertTrue(sut.user?.email == user.email)
+        XCTAssertEqual(sut.passwordEntry, "")
+        XCTAssertEqual(sut.passwordEntry2, "")
         XCTAssertTrue(sut.state.isConnected)
     }
     

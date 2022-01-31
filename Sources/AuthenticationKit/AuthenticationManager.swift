@@ -54,7 +54,15 @@ public final class AuthenticationManager<Authenticator: AKAuthenticator>: Observ
         authenticator.currentUserPublisher
             .receive(on: RunLoop.main)
             .sink { currentUser in
-                guard let currentUser = currentUser else { self.state = .disconnected ; return }
+                guard let currentUser = currentUser else {
+                    self.state = .disconnected
+                    self.usernameEntry = ""
+                    self.emailEntry = ""
+                    self.passwordEntry = ""
+                    self.passwordEntry2 = ""
+                    self.profileImage = nil
+                    return
+                }
                 self.state = .connected(user: currentUser)
                 self.usernameEntry = currentUser.username ?? ""
                 self.emailEntry = currentUser.email ?? ""
@@ -228,7 +236,13 @@ public final class AuthenticationManager<Authenticator: AKAuthenticator>: Observ
     func run(_ work: @escaping () async throws -> ()) async {
         error = nil
         state = .loading
-        do { try await work() }
+        do {
+            try await work()
+            Task { @MainActor in
+                passwordEntry = ""
+                passwordEntry2 = ""
+            }
+        }
         catch {
             self.error = error
             guard let user = user
