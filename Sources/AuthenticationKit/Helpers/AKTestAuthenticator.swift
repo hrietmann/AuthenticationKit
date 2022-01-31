@@ -86,22 +86,22 @@ public final class AKTestAuthenticator: AKAuthenticator {
         
     }
     
-    public func signUp(username: String, email: String, password: String) async throws {
+    public func signUp(username: String, email: String, password: String) async throws -> User {
         if waitingSeconds > 0 {
             try await Task.sleep(nanoseconds: waitingSeconds * 1_000_000_000)
         }
         switch signUpResult {
-        case .success(let user): currentUser = user
+        case .success(let user): return user
         case .failure(let error): throw error
         }
     }
     
-    public func signIn(email: String, password: String) async throws {
+    public func signIn(email: String, password: String) async throws -> User {
         if waitingSeconds > 0 {
             try await Task.sleep(nanoseconds: waitingSeconds * 1_000_000_000)
         }
         switch signInResult {
-        case .success(let user): currentUser = user
+        case .success(let user): return user
         case .failure(let error): throw error
         }
     }

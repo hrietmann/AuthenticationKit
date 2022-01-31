@@ -38,10 +38,10 @@ public protocol AKAuthenticator {
     func removeRemoteUpdatesListners(for user: User) async throws
     
     /// Remotely signup with the given parameters
-    func signUp(username: String, email: String, password: String) async throws
+    func signUp(username: String, email: String, password: String) async throws -> User
     
     /// Remotely signin with the given parameters
-    func signIn(email: String, password: String) async throws
+    func signIn(email: String, password: String) async throws -> User
     
     /// Locally and remotely signout the given user
     func signOut(user: User) async throws

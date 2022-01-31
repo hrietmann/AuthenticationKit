@@ -66,7 +66,6 @@ public final class AuthenticationManager<Authenticator: AKAuthenticator>: Observ
                 self.state = .connected(user: currentUser)
                 self.usernameEntry = currentUser.username ?? ""
                 self.emailEntry = currentUser.email ?? ""
-                self.run { try await self.authenticator.addRemoteUpdatesLisnters(for: currentUser) }
             }
             .store(in: &cancellables)
     }
@@ -132,10 +131,12 @@ public final class AuthenticationManager<Authenticator: AKAuthenticator>: Observ
     private func signUpWork() async throws {
         guard user == nil else { throw UserAlreadySignedIn(localizationFile: errorsLocalizationFile) }
         if let error = usernameError ?? emailError ?? passwordError ?? password2Error { throw error }
-        try await authenticator.signUp(
+        let newUser = try await authenticator.signUp(
             username: usernameEntry,
             email: emailEntry,
             password: passwordEntry)
+        authenticator.currentUser = newUser
+        try await authenticator.addRemoteUpdatesLisnters(for: newUser)
     }
     
     
@@ -145,9 +146,11 @@ public final class AuthenticationManager<Authenticator: AKAuthenticator>: Observ
     private func signInWork() async throws {
         guard user == nil else { throw UserAlreadySignedIn(localizationFile: errorsLocalizationFile) }
         if let error = emailError ?? passwordError { throw error }
-        try await authenticator.signIn(
+        let newUser = try await authenticator.signIn(
             email: emailEntry,
             password: passwordEntry)
+        authenticator.currentUser = newUser
+        try await authenticator.addRemoteUpdatesLisnters(for: newUser)
     }
     
     
@@ -157,6 +160,7 @@ public final class AuthenticationManager<Authenticator: AKAuthenticator>: Observ
     private func signOutWork() async throws {
         guard let user = user else { throw UserNotSignedIn(localizationFile: errorsLocalizationFile) }
         try await authenticator.signOut(user: user)
+        authenticator.currentUser = nil
         try await authenticator.removeRemoteUpdatesListners(for: user)
     }
     
@@ -228,6 +232,7 @@ public final class AuthenticationManager<Authenticator: AKAuthenticator>: Observ
     public func deleteUser() async { await run(deleteUserWork) }
     private func deleteUserWork() async throws {
         guard let user = user else { throw UserNotSignedIn(localizationFile: errorsLocalizationFile) }
+        authenticator.currentUser = nil
         try await authenticator.delete(user: user)
     }
     
