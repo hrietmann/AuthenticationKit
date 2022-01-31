@@ -13,7 +13,7 @@ import Combine
 @MainActor
 public class AuthenticationSession: ObservableObject {
     
-    var completion: (() -> ())?
+    public var completion: (() -> ())?
     
     public init() {
         
