@@ -37,7 +37,7 @@ public final class AuthenticationManager<Authenticator: AKAuthenticator>: Observ
     public init(authenticator: Authenticator, errorsLocalizationFile: String? = nil) {
         self.authenticator = authenticator
         self.errorsLocalizationFile = errorsLocalizationFile
-        setupCurrentUserListner()
+        setupCurrentUserListners()
         
         loadCachedUser()
     }
@@ -45,12 +45,12 @@ public final class AuthenticationManager<Authenticator: AKAuthenticator>: Observ
     public init(authenticator: Authenticator, errorsLocalizationFile: String? = nil) async {
         self.authenticator = authenticator
         self.errorsLocalizationFile = errorsLocalizationFile
-        setupCurrentUserListner()
+        setupCurrentUserListners()
         
         await loadCachedUser()
     }
     
-    private func setupCurrentUserListner() {
+    private func setupCurrentUserListners() {
         authenticator.currentUserPublisher
             .receive(on: RunLoop.main)
             .sink { currentUser in
@@ -66,6 +66,7 @@ public final class AuthenticationManager<Authenticator: AKAuthenticator>: Observ
                 self.state = .connected(user: currentUser)
                 self.usernameEntry = currentUser.username ?? ""
                 self.emailEntry = currentUser.email ?? ""
+                self.run { try await self.authenticator.addRemoteUpdatesLisnters(for: currentUser) }
             }
             .store(in: &cancellables)
     }
@@ -156,6 +157,7 @@ public final class AuthenticationManager<Authenticator: AKAuthenticator>: Observ
     private func signOutWork() async throws {
         guard let user = user else { throw UserNotSignedIn(localizationFile: errorsLocalizationFile) }
         try await authenticator.signOut(user: user)
+        try await authenticator.removeRemoteUpdatesListners(for: user)
     }
     
     
