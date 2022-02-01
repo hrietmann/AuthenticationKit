@@ -138,7 +138,7 @@ public final class AKTestAuthenticator: AKAuthenticator {
         #warning("sendEmailVerification not tested yet")
     }
     
-    public func sendPasswordResetEmail(for user: User) async throws {
+    public func sendPasswordReset(to email: String) async throws {
         if waitingSeconds > 0 {
             try await Task.sleep(nanoseconds: waitingSeconds * 1_000_000_000)
         }

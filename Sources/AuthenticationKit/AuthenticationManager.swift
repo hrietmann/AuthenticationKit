@@ -227,7 +227,13 @@ public final class AuthenticationManager<Authenticator: AKAuthenticator>: Observ
     public func sendPasswordResetEmail() async { await run(sendPasswordResetEmailWork) }
     private func sendPasswordResetEmailWork() async throws {
         guard let user = user else { throw UserNotSignedIn(localizationFile: errorsLocalizationFile) }
-        try await authenticator.sendPasswordResetEmail(for: user)
+        let email: String
+        if let userEmail = user.email { email = userEmail }
+        else {
+            if let emailError = emailError { throw emailError }
+            email = emailEntry
+        }
+        try await authenticator.sendPasswordReset(to: email)
     }
     
     

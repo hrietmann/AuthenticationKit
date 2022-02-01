@@ -56,7 +56,7 @@ public protocol AKAuthenticator {
     func sendEmailVerification(for user: User) async throws
     
     /// Request to send a remote link to change user's password
-    func sendPasswordResetEmail(for user: User) async throws
+    func sendPasswordReset(to email: String) async throws
     
     /// Update the given user's username
     func change(username: String, of user: User) async throws
