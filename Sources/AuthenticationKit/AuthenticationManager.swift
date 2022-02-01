@@ -248,7 +248,7 @@ public final class AuthenticationManager<Authenticator: AKAuthenticator>: Observ
     private func changeProfileImageWork() async throws {
         guard let user = user else { throw UserNotSignedIn(localizationFile: errorsLocalizationFile) }
         #if os(iOS) || os(tvOS)
-        let image = profileImage.resized(to: .init(width: 300, height: 300))
+        let image = profileImage?.resized(to: .init(width: 300, height: 300))
         try await authenticator.change(profile: image, of: user)
         #endif
         #if os(macOS)
