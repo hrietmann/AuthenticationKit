@@ -11,6 +11,30 @@ import StringKit
 import SwiftUI
 
 
+#if os(iOS) || os(tvOS)
+import UIKit
+public typealias UniversalImage = UIImage
+
+public extension UniversalImage {
+    func resized(to target: CGSize) -> UniversalImage {
+            let ratio = min(
+                target.height / size.height, target.width / size.width
+            )
+            let new = CGSize(
+                width: size.width * ratio, height: size.height * ratio
+            )
+            let renderer = UIGraphicsImageRenderer(size: new)
+            return renderer.image { _ in
+                self.draw(in: CGRect(origin: .zero, size: new))
+            }
+        }
+}
+#endif
+
+#if os(macOS)
+public typealias UniversalImage = NSImage
+#endif
+
 
 @MainActor
 @available(iOS 14.0.0, *)
@@ -21,7 +45,7 @@ public final class AuthenticationManager<Authenticator: AKAuthenticator>: Observ
     @Published public var emailEntry = ""
     @Published public var passwordEntry = ""
     @Published public var passwordEntry2 = ""
-    @Published public var profileImage: CGImage? = nil
+    @Published public var profileImage: UniversalImage? = nil
     
     // MARK: - Activity states properties -
     @Published public private(set) var error: Error? = nil
@@ -223,7 +247,13 @@ public final class AuthenticationManager<Authenticator: AKAuthenticator>: Observ
     public func changeProfileImage() async { await run(changeProfileImageWork) }
     private func changeProfileImageWork() async throws {
         guard let user = user else { throw UserNotSignedIn(localizationFile: errorsLocalizationFile) }
+        #if os(iOS) || os(tvOS)
+        let image = profileImage.resized(to: .init(width: 300, height: 300))
+        try await authenticator.change(profile: image, of: user)
+        #endif
+        #if os(macOS)
         try await authenticator.change(profile: profileImage, of: user)
+        #endif
     }
     
     

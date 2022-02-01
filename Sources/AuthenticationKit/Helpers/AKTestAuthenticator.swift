@@ -155,7 +155,7 @@ public final class AKTestAuthenticator: AKAuthenticator {
         #warning("changeUsername not tested yet")
     }
     
-    public func change(profile image: CGImage?, of user: User) async throws {
+    public func change(profile image: UniversalImage?, of user: User) async throws {
         if waitingSeconds > 0 {
             try await Task.sleep(nanoseconds: waitingSeconds * 1_000_000_000)
         }
