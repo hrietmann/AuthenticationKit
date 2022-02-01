@@ -49,6 +49,7 @@ public final class AuthenticationManager<Authenticator: AKAuthenticator>: Observ
     
     // MARK: - Activity states properties -
     @Published public private(set) var error: Error? = nil
+    @Published public private(set) var taskCompleted = false
     @Published public private(set) var state = AKState<Authenticator.User>.loading
     public var user: Authenticator.User? { authenticator.currentUser }
     
@@ -279,15 +280,18 @@ public final class AuthenticationManager<Authenticator: AKAuthenticator>: Observ
     func run(_ work: @escaping () async throws -> ()) async {
         error = nil
         state = .loading
+        taskCompleted = false
         do {
             try await work()
             Task { @MainActor in
                 passwordEntry = ""
                 passwordEntry2 = ""
+                taskCompleted = true
             }
         }
         catch {
             self.error = error
+            taskCompleted = true
             guard let user = user
             else { state = .disconnected ; return }
             state = .connected(user: user)
