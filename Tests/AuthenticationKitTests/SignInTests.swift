@@ -20,7 +20,7 @@ final class SignInTests: XCTestCase {
         authenticator.signInResult = .success(user)
         authenticator.waitingSeconds = 0
         
-        let sut = await AuthenticationManager(authenticator: authenticator)
+        let sut = await AuthManager(authenticator: authenticator)
         sut.emailEntry = user.email ?? ""
         sut.passwordEntry = "Azertyuiop@1234567890"
         await sut.signIn()
@@ -44,7 +44,7 @@ final class SignInTests: XCTestCase {
         authenticator.signInResult = .failure(serverError)
         authenticator.waitingSeconds = 0
         
-        let sut = await AuthenticationManager(authenticator: authenticator)
+        let sut = await AuthManager(authenticator: authenticator)
         sut.emailEntry = "email@email.com"
         sut.passwordEntry = "Azertyuiop@1234567890"
         await sut.signIn()
@@ -59,7 +59,7 @@ final class SignInTests: XCTestCase {
         let authenticator = AKTestAuthenticator()
         authenticator.waitingSeconds = 0
         
-        let sut = await AuthenticationManager(authenticator: authenticator)
+        let sut = await AuthManager(authenticator: authenticator)
         
         // Missing all
         sut.emailEntry = ""
@@ -92,7 +92,7 @@ final class SignInTests: XCTestCase {
         authenticator.cachedUser = user
         authenticator.waitingSeconds = 0
         
-        let sut = await AuthenticationManager(authenticator: authenticator)
+        let sut = await AuthManager(authenticator: authenticator)
         sut.emailEntry = user.email ?? ""
         sut.passwordEntry = "Azertyuiop@1234567890"
         await sut.signIn()

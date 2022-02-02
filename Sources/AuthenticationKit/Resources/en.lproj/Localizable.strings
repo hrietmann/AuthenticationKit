@@ -17,3 +17,7 @@
 "Error.InvalidPasswordFormat.atLeastOneSpecialCharacter" = "1 special character (i.e.: '.', '@',...)";
 "Error.EmailAlreadyVerified" = "Your email is already verified.";
 "Error.PasswordMismatch" = "Confirmation password is different.";
+"Error.AutherizationCredentialsMissing" = "No credentials given by Sign In With Apple.";
+"Error.NonceMissing" = "Invalid state: A login callback was received, but no login request was sent.";
+"Error.IdentityTokenMissing" = "Unable to fetch identity token";
+"Error.TokenSerializationFailure" = "Unable to serialize token string from data: ";

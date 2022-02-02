@@ -49,6 +49,9 @@ public final class AKTestAuthenticator: AKAuthenticator {
     /// Result returned by signIn method
     public var signInResult: Result<User,Error> = .success(.exemple)
     
+    /// Result returned by signInWithApple method
+    public var signInWithAppleResult: Result<User,Error> = .success(.exemple)
+    
     /// Result returned by signIn method
     public var signOutResult: Error? = nil
     
@@ -104,6 +107,17 @@ public final class AKTestAuthenticator: AKAuthenticator {
         case .success(let user): return user
         case .failure(let error): throw error
         }
+    }
+    
+    public func signInWithApple(tokenID: String, nonce: String) async throws -> TestUser {
+        if waitingSeconds > 0 {
+            try await Task.sleep(nanoseconds: waitingSeconds * 1_000_000_000)
+        }
+        switch signInWithAppleResult {
+        case .success(let user): return user
+        case .failure(let error): throw error
+        }
+        #warning("signInWithApple not tested yet")
     }
     
     public func signOut(user: TestUser) async throws {

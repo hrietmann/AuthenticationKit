@@ -11,7 +11,7 @@ import Combine
 
 
 @MainActor
-public class AuthenticationSession: ObservableObject {
+public class AuthSession: ObservableObject {
     
     public var completion: (() -> ())?
     

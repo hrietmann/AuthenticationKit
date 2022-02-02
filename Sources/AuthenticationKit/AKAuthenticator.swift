@@ -43,6 +43,9 @@ public protocol AKAuthenticator {
     /// Remotely signin with the given parameters
     func signIn(email: String, password: String) async throws -> User
     
+    /// Remotely signin with Apple using the parameters given by Apple
+    func signInWithApple(tokenID: String, nonce: String) async throws -> User
+    
     /// Locally and remotely signout the given user
     func signOut(user: User) async throws
     

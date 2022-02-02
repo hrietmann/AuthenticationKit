@@ -1,0 +1,23 @@
+//
+//  File.swift
+//  
+//
+//  Created by Hans Rietmann on 02/02/2022.
+//
+
+import Foundation
+
+
+
+
+public struct AutherizationCredentialsMissing: LocalizedError {
+    
+    
+    let localizationFile: String?
+    
+    public var failureReason: String? {
+        "Error.AutherizationCredentialsMissing".localized(fromFile: localizationFile)
+    }
+    
+    
+}

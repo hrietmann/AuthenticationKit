@@ -16,7 +16,7 @@ final class AuthenticationKitTests: XCTestCase {
         authenticator.signUpResult = .success(user)
         authenticator.waitingSeconds = 0
         
-        let sut = await AuthenticationManager(authenticator: authenticator)
+        let sut = await AuthManager(authenticator: authenticator)
         sut.usernameEntry = user.username ?? ""
         sut.emailEntry = user.email ?? ""
         sut.passwordEntry = password
@@ -42,7 +42,7 @@ final class AuthenticationKitTests: XCTestCase {
         authenticator.signUpResult = .failure(error)
         authenticator.waitingSeconds = 0
         
-        let sut = await AuthenticationManager(authenticator: authenticator)
+        let sut = await AuthManager(authenticator: authenticator)
         sut.usernameEntry = "Username"
         sut.emailEntry = "email@email.com"
         sut.passwordEntry = password

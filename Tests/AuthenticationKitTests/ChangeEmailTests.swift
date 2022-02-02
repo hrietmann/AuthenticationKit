@@ -20,7 +20,7 @@ final class ChangeEmailTests: XCTestCase {
         authenticator.cachedUser = user
         authenticator.waitingSeconds = 0
         
-        let sut = await AuthenticationManager(authenticator: authenticator)
+        let sut = await AuthManager(authenticator: authenticator)
         sut.emailEntry = newEmail
         sut.passwordEntry = "@Azertyuiop3"
         await sut.changeEmail()
@@ -37,7 +37,7 @@ final class ChangeEmailTests: XCTestCase {
         let authenticator = AKTestAuthenticator()
         authenticator.waitingSeconds = 0
         
-        let sut = await AuthenticationManager(authenticator: authenticator)
+        let sut = await AuthManager(authenticator: authenticator)
         sut.emailEntry = newEmail
         await sut.changeEmail()
         
@@ -56,7 +56,7 @@ final class ChangeEmailTests: XCTestCase {
         authenticator.cachedUser = user
         authenticator.waitingSeconds = 0
         
-        let sut = await AuthenticationManager(authenticator: authenticator)
+        let sut = await AuthManager(authenticator: authenticator)
         sut.emailEntry = newEmail
         await sut.changeEmail()
         
@@ -75,7 +75,7 @@ final class ChangeEmailTests: XCTestCase {
         authenticator.cachedUser = user
         authenticator.waitingSeconds = 0
         
-        let sut = await AuthenticationManager(authenticator: authenticator)
+        let sut = await AuthManager(authenticator: authenticator)
         sut.emailEntry = newEmail
         await sut.changeEmail()
         

@@ -21,7 +21,7 @@ final class SignOutTests: XCTestCase {
         authenticator.signOutResult = nil
         authenticator.waitingSeconds = 0
         
-        let sut = await AuthenticationManager(authenticator: authenticator)
+        let sut = await AuthManager(authenticator: authenticator)
         await sut.signOut()
         
         // Waits for the background tasks to propagate the result on the main actor
@@ -48,7 +48,7 @@ final class SignOutTests: XCTestCase {
         authenticator.signOutResult = error
         authenticator.waitingSeconds = 0
         
-        let sut = await AuthenticationManager(authenticator: authenticator)
+        let sut = await AuthManager(authenticator: authenticator)
         await sut.signOut()
         
         XCTAssertNotNil(sut.error)
@@ -65,7 +65,7 @@ final class SignOutTests: XCTestCase {
         authenticator.signOutResult = nil
         authenticator.waitingSeconds = 0
         
-        let sut = await AuthenticationManager(authenticator: authenticator)
+        let sut = await AuthManager(authenticator: authenticator)
         await sut.signOut()
         
         XCTAssertNotNil(sut.error)
