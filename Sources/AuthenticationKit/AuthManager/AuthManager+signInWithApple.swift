@@ -24,23 +24,24 @@ extension AuthManager {
     }
     private var signInWithApplePayload: SignInWithAppleManager.Payload {
         get async throws {
-            try await withCheckedThrowingContinuation { continuation in
-                let nonce = String.randomNonce32
-                let appleIDProvider = ASAuthorizationAppleIDProvider()
-                let request = appleIDProvider.createRequest()
-                request.requestedScopes = [.fullName, .email]
-                request.nonce = nonce.sha256
-                
-                let manager = SignInWithAppleManager(nonce: nonce, localizationFile: errorsLocalizationFile) { result in
+            let nonce = String.randomNonce32
+            let appleIDProvider = ASAuthorizationAppleIDProvider()
+            let request = appleIDProvider.createRequest()
+            request.requestedScopes = [.fullName, .email]
+            request.nonce = nonce.sha256
+            
+            let manager = SignInWithAppleManager(nonce: nonce, localizationFile: errorsLocalizationFile)
+            
+            return try await withCheckedThrowingContinuation { continuation in
+                let authorizationController = ASAuthorizationController(authorizationRequests: [request])
+                authorizationController.delegate = manager
+                authorizationController.performRequests()
+                manager.completion = { result in
                     switch result {
                     case .success(let payload): continuation.resume(returning: payload)
                     case .failure(let error): continuation.resume(throwing: error)
                     }
                 }
-                
-                let authorizationController = ASAuthorizationController(authorizationRequests: [request])
-                authorizationController.delegate = manager
-                authorizationController.performRequests()
             }
         }
     }
