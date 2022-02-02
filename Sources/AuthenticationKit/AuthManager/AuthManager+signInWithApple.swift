@@ -31,11 +31,15 @@ extension AuthManager {
                 request.requestedScopes = [.fullName, .email]
                 request.nonce = nonce.sha256
                 
-                let manager = SignInWithAppleManager(nonce: nonce, localizationFile: errorsLocalizationFile, completion: continuation.resume(with:))
+                let manager = SignInWithAppleManager(nonce: nonce, localizationFile: errorsLocalizationFile) { result in
+                    switch result {
+                    case .success(let payload): continuation.resume(returning: payload)
+                    case .failure(let error): continuation.resume(throwing: error)
+                    }
+                }
                 
                 let authorizationController = ASAuthorizationController(authorizationRequests: [request])
                 authorizationController.delegate = manager
-//                authorizationController.presentationContextProvider = manager
                 authorizationController.performRequests()
             }
         }
