@@ -18,11 +18,11 @@ extension AuthManager {
     public func signInWithApple() { run(signInWithAppleWork) }
     public func signInWithApple() async { await run(signInWithAppleWork) }
     private func signInWithAppleWork() async throws {
-        let payload = try await signInWithApplePayload
+        guard let payload = try await signInWithApplePayload else { return }
         let newUser = try await authenticator.signInWithApple(tokenID: payload.token, nonce: payload.nonce)
         try await authenticator.addRemoteUpdatesLisnters(for: newUser)
     }
-    private var signInWithApplePayload: SignInWithAppleManager.Payload {
+    private var signInWithApplePayload: SignInWithAppleManager.Payload? {
         get async throws {
             let nonce = String.randomNonce32
             let appleIDProvider = ASAuthorizationAppleIDProvider()

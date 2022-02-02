@@ -21,7 +21,7 @@ class SignInWithAppleManager: NSObject, ASAuthorizationControllerDelegate {
     
     let nonce: String?
     let localizationFile: String?
-    var completion: ((Result<Payload,Error>) -> ())?
+    var completion: ((Result<Payload?,Error>) -> ())?
     
     init(nonce: String?, localizationFile: String?) {
         self.nonce = nonce
@@ -51,7 +51,9 @@ class SignInWithAppleManager: NSObject, ASAuthorizationControllerDelegate {
     
     
     func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
-        completion?(.failure(error))
+        guard let error = error as? ASAuthorizationError, error.errorCode == 1001 else { completion?(.failure(error)) ; return }
+        // Authentication was canceled by the user
+        completion?(.success(nil))
     }
     
     
