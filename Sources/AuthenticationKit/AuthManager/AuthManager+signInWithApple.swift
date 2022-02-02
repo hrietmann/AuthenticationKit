@@ -15,8 +15,8 @@ import AuthenticationServices
 extension AuthManager {
     
     
-    public func signInWithApple() {  }
-    public func signInWithApple() async {  }
+    public func signInWithApple() { run(signInWithAppleWork) }
+    public func signInWithApple() async { await run(signInWithAppleWork) }
     private func signInWithAppleWork() async throws {
         let payload = try await signInWithApplePayload
         let newUser = try await authenticator.signInWithApple(tokenID: payload.token, nonce: payload.nonce)
