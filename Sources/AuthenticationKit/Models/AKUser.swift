@@ -13,7 +13,7 @@ import Foundation
 
 public protocol AKUser: Identifiable {
     
-    var id: ID { get }
+    var id: String { get }
     var username: String? { get }
     var email: String? { get }
     var emailVerified: Bool { get }

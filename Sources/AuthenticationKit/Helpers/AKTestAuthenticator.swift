@@ -17,7 +17,7 @@ public final class AKTestAuthenticator: AKAuthenticator {
     public static var passwordConstraints = PasswordConstraint.allCases
     
     public struct TestUser: AKUser {
-        public var id: UUID
+        public var id: String
         public var username: String?
         public var email: String?
         public var emailVerified: Bool
@@ -25,7 +25,7 @@ public final class AKTestAuthenticator: AKAuthenticator {
         
         public static var exemple: TestUser {
             TestUser(
-                id: UUID(),
+                id: UUID().uuidString,
                 username: "John Appleseed",
                 email: "john.appleseed@authentication.com",
                 emailVerified: true,
